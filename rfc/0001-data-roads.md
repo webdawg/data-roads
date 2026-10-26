@@ -92,6 +92,59 @@ its connection closes? Does the protocol require a minimum hold duration,
 a minimum replication factor before an ephemeral Custodian is allowed to
 disconnect, or some other guarantee? Not yet specified.
 
+### 3.1 Storage medium is unconstrained
+
+Data Roads does not define or restrict what physical or digital medium a
+Custodian uses to hold data. A hard drive, a burned CD, printed paper that
+gets scanned back in, a file copied to a desktop — all qualify. This is a
+deliberate design choice, not an omission: constraining Custodians to
+"approved" media would recreate exactly the kind of gatekeeping Data Roads
+exists to remove (see Motivation). It also mirrors the data-governance-
+and-classification spec's Axis 2 (Storage Medium) principle directly:
+the scheme should reference medium *properties*, not a fixed list of named
+media, so a medium nobody has invented yet still fits without restructuring
+the protocol.
+
+Whatever compensates a Custodian (Section 2, principle 5) does so based on
+what they actually provide — availability, durability, retrievability —
+not on the sophistication of the medium used to provide it. A participant
+storing data by printing and physically filing paper is not inherently
+worth less to the network than one running a RAID array, if what the
+protocol actually needs (a recoverable copy, reliably) is equally met.
+
+### 3.2 Redundancy is an effective property, not a fixed replication factor
+
+Data Roads does not specify a single global replication-factor number
+("every item must have N copies"). Required redundancy for a given piece
+of data is instead computed from realistic modeling of how humans and
+systems actually behave — participant churn, failure rates, the
+likelihood any single Custodian goes offline or loses data — and that
+model can be satisfied by very different-looking populations of
+Custodians:
+
+- **A single, fairly reliable Custodian** (the stated example: "some guy
+  with a hard drive somewhere") — low aggregate redundancy even though a
+  copy nominally exists, because the whole requirement rests on one
+  party's continued availability and honesty.
+- **A large, individually unreliable population** (the stated example:
+  50,000 people each with a copy of the file on their desktop) — each
+  individual Custodian may be flaky, short-lived, or drop out at any time,
+  but the aggregate effective redundancy can be very high precisely
+  because of the count, even though no single participant is trustworthy
+  on their own.
+
+Both are legitimate ways to satisfy a redundancy requirement. The protocol
+needs to evaluate redundancy as a function of the actual population
+currently holding a copy (count, independence, observed reliability), not
+assume any fixed number of copies is sufficient or necessary on its own.
+
+**Open question**: the actual model for computing "effective redundancy"
+from a population of Custodians (what inputs, what formula, how it's
+measured/corroborated via OAG, how often it's re-evaluated) is not yet
+specified. This is likely the single most technically important open
+question in this RFC — the system is only as "bulletproof" as this model
+actually is.
+
 ## 4. Architecture
 
 Data Roads is a layer, not a replacement, for its two dependencies:
@@ -134,6 +187,11 @@ schema is reviewed against these requirements specifically.
 
 Stated explicitly rather than papered over with invented answers:
 
+- **The effective-redundancy model** (Section 3.2) — the single most
+  technically important open question here: how to actually compute
+  required/achieved redundancy from a real population of Custodians of
+  wildly varying reliability and medium, rather than a fixed replication
+  count.
 - **What does "payment" actually mean**, on either side (Access Agreement
   consideration, Storage/Transfer Consideration)? Currency, compute,
   reciprocal data contribution, reputation, something else? Not yet
