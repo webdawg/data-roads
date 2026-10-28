@@ -145,6 +145,69 @@ specified. This is likely the single most technically important open
 question in this RFC — the system is only as "bulletproof" as this model
 actually is.
 
+### 3.3 Object-linked records, ownership proof, and documentary storage
+
+**Proposed, not implemented.** Support globally unique object histories for houses,
+cars, components, marbles, rocks, and other objects, with no minimum economic value.
+The companion [object-event and gated-audit RFC](https://github.com/webdawg/oag-mesh/blob/main/spec/07-object-history-and-ownership-rfc.md)
+defines the proposed identity, ownership-proof exchange, partnerships, and audit workflow.
+
+An object ID identifies a history; it is not an access credential or proof of ownership.
+Before releasing owner-accessible records, verify current ownership or delegated authority
+using class-appropriate evidence, a fresh request-bound challenge, and current transfer,
+revocation, and dispute state. Possession of a tag or signing key alone is insufficient.
+Object title, data authorship/ownership, custodianship, and access rights remain distinct.
+Owning a house does not grant access to former occupants' personal or genetic records.
+
+Construct storage options for:
+
+- An owner-controlled local encrypted vault and portable/offline exports.
+- Encrypted redundant copies with independently operated custodians.
+- Object-attached tags or certificates carrying an ID and authenticated manifest reference.
+- Deeds, titles, registration documents, or physical archives carrying selected durable
+  records, attestations, or references to encrypted records. Documentary/legal acceptance
+  requires the relevant authority; inserting an ID does not itself establish legal title.
+
+A versioned manifest should bind object ID, ciphertext integrity, storage locations or
+retrieval mechanisms, schema and policy versions, and authorized update provenance.
+References must survive host migration through authenticated updates; a mutable URL alone
+is not integrity or ownership proof. Do not put decryption keys, private ownership evidence,
+or sensitive personal metadata in public deeds, tags, manifests, or graph events. Public
+identifiers and content hashes can themselves leak linkages and require privacy review.
+Key recovery, custody, offline retrieval, and transfer policies remain to be designed.
+
+Owners can grant object-scoped, renewable data partnerships to inspectors, mechanics,
+researchers, and other providers. Agreements cover both contributions and access, purpose,
+retention, corrections, onward sharing, and transfer/termination behavior. On sale, transfer
+only records whose policy permits it, advance the ownership epoch, revoke obsolete grants,
+and update key access. Neither sale nor key rotation erases plaintext already disclosed.
+Eligible records may also have an owner-selected scheduled release; a timestamp is not
+itself a cryptographic lock, and public disclosure cannot reliably be reversed.
+
+### 3.4 Gated auditability of global data
+
+**Proposed, not implemented.** Storage must support an authorized audit workflow for object
+movements, ownership/custody claims, measurements, research provenance, and record correctness.
+Global coverage does not mean unrestricted global access. Auditors need scoped, expiring
+authorization for evidence; an auditor role does not override owner or third-party rights.
+
+Retain integrity-verifiable evidence versions and protected access receipts for an agreed
+retention window. Support challenge, evidence submission, independent cross-checking, scoped
+findings, counter-evidence, correction, and re-audit. Findings must identify the method,
+evidence version, uncertainty, and limitations, with supported/corroborated, disputed,
+inconclusive, or disproved outcomes rather than an unconditional claim of truth.
+
+For movement audits, preserve authorized departure/handoff/receipt evidence and chain of
+custody. Signatures and matching hashes establish attribution/integrity, not that an object
+physically moved or a measurement was accurate. Collusion, cloned tags, spoofed sensors,
+missing receipts, and clock uncertainty require explicit treatment. Exact locations and
+routes stay encrypted and selectively disclosed; object auditing must not become covert
+tracking of people. Public audit summaries must not disclose protected evidence or identities.
+
+Choose retention, key custody, auditor trust, dispute authority, and disclosure policies before
+implementation. Replication and consensus do not by themselves establish real-world truth,
+and an append-only log is not a substitute for privacy-aware retention or deletion rules.
+
 ## 4. Architecture
 
 Data Roads is a layer, not a replacement, for its two dependencies:
@@ -154,11 +217,11 @@ Data Roads is a layer, not a replacement, for its two dependencies:
   generation. An Owner's claim to a piece of data is itself an OAG
   Assertion, backed by Evidence, corroborated the same way any other OAG
   claim is — not a bare declaration.
-- **`oag-mesh`** provides the actual cross-cluster replication and
-  federated corroboration that makes "distributed across many peers
-  globally" a real property rather than an aspiration. Data Roads does not
-  reimplement replication; it relies on `oag-mesh`'s existing
-  gossip/pull-replication model.
+- **`oag-mesh`** provides cluster bridging, federated corroboration, and
+  a push-only HTTP transport. Data Roads proposes to build on this layer;
+  durable cross-cluster storage, pull-based anti-entropy, ownership-gated
+  retrieval, and audit evidence exchange are not existing guarantees.
+  Data Roads does not claim an already implemented gossip/pull storage service.
 
 **Open question**: the exact interface between Data Roads and these two
 layers — which OAG event types/predicates represent an Access Agreement,
